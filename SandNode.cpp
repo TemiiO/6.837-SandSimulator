@@ -22,10 +22,11 @@ namespace GLOO {
         std::vector<glm::vec3> positions;
         std::vector<glm::vec3> velocities;
 
-        for (float i = 0; i < 4; i++) {
+        for (float i = 0; i < 30; i++) {
             //Modifying particle state
             positions.push_back(glm::vec3(0.0f, i / 2.0f, 0));
             velocities.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+            //Connecting the spring and fixing if its the first particle
             system_.addParticle(.80f);
             //Creating the scene node for the particle
             std::shared_ptr<VertexObject> sphere_mesh_ = PrimitiveFactory::CreateSphere(0.055f, 25, 25);
@@ -42,6 +43,7 @@ namespace GLOO {
         first_state.positions = positions;
         first_state.velocities = velocities;
         state_ = first_state;
+        //system_.fixParticle(0);
         time_ = 0.0f;
     }
 
@@ -56,4 +58,5 @@ namespace GLOO {
         }
         time_ += delta_time;
     }
+
 }
