@@ -24,7 +24,7 @@ namespace GLOO {
 
         for (float i = 0; i < 4; i++) {
             //Modifying particle state
-            positions.push_back(glm::vec3(0.0f, i / 3.0f, 0));
+            positions.push_back(glm::vec3(0.0f, i / 2.0f, 0));
             velocities.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
             //Connecting the spring and fixing if its the first particle
             system_.addParticle(.80f);
@@ -40,9 +40,6 @@ namespace GLOO {
             AddChild(std::move(sphere));
         }
 
-        for (int i = 1; i < 4; i++) {
-            system_.addSpring(i - 1, i, .25f, 32.0f);
-        }
         first_state.positions = positions;
         first_state.velocities = velocities;
         state_ = first_state;
