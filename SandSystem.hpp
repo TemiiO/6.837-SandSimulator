@@ -34,10 +34,9 @@ namespace GLOO {
                 glm::vec3 first_position = state.positions[i];
                 for (int j = i+1; j < particle_masses.size(); j++) {
                     glm::vec3 second_position = state.positions[j];
-                    //Take these positions and the sphere radius - currently using .055f - and see if collides
+                    //Take these positions and the sphere radius - currently using .015f - and see if collides
                     float position_diff = glm::distance(first_position, second_position);
-                    if (position_diff <= .055f) {
-                        std::cout << "Collides" << std::endl;
+                    if (position_diff <= 0.015f) {
                         new_state.velocities[i] = -new_state.velocities[i];
                         new_state.velocities[j] = -new_state.velocities[j]+glm::vec3(.5f,.5f,.5f);
                     }
@@ -57,7 +56,6 @@ namespace GLOO {
                     new_state.velocities[i] = glm::vec3(0, 0, 0);
                 }
             }
-            std::cout << "done" << std::endl;
 
             return new_state;
         }

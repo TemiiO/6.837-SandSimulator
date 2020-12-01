@@ -21,6 +21,7 @@ namespace GLOO {
         ParticleState first_state;
         std::vector<glm::vec3> positions;
         std::vector<glm::vec3> velocities;
+        radius_ = 0.015f;
 
         for (float i = 0; i < 30; i++) {
             //Modifying particle state
@@ -29,12 +30,19 @@ namespace GLOO {
             //Connecting the spring and fixing if its the first particle
             system_.addParticle(.80f);
             //Creating the scene node for the particle
-            std::shared_ptr<VertexObject> sphere_mesh_ = PrimitiveFactory::CreateSphere(0.055f, 25, 25);
+            std::shared_ptr<VertexObject> sphere_mesh_ = PrimitiveFactory::CreateSphere(radius_, 25, 25);
             std::shared_ptr<PhongShader> shader = make_unique<PhongShader>();
             std::shared_ptr<VertexObject> mesh = sphere_mesh_;
             auto sphere = make_unique<SceneNode>();
             sphere->CreateComponent<ShadingComponent>(shader);
             sphere->CreateComponent<RenderingComponent>(sphere_mesh_);
+            sphere->CreateComponent<MaterialComponent>(std::make_shared<Material>(Material::GetDefault()));
+            glm::vec3 sand_stone = {0.689f, 0.565f, 0.510f};
+            auto material_ptr = sphere->GetComponentPtr<MaterialComponent>();
+            Material &material = material_ptr->GetMaterial();
+            material.SetAmbientColor(sand_stone);
+            material.SetDiffuseColor(sand_stone);
+            sphere->GetComponentPtr<MaterialComponent>()->GetMaterial().SetDiffuseColor(sand_stone);
             sphere->GetTransform().SetPosition(glm::vec3(0.0f, i / 3.0f, 0));
             particleSpheres.push_back(sphere.get());
             AddChild(std::move(sphere));

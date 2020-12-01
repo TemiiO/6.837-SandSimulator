@@ -15,6 +15,7 @@ namespace GLOO {
         std::unique_ptr<IntegratorBase<SandSystem, ParticleState>> integrator;
         ParticleState state_;
         SandSystem system_;
+        float radius_;
         float step_;
         float time_;
         SandNode(IntegratorType type, float step);
