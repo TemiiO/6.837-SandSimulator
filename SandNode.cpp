@@ -23,7 +23,7 @@ namespace GLOO {
         std::vector<glm::vec3> velocities;
         radius_ = 0.015f;
 
-        for (float i = 0; i < 20; i++) {
+        for (float i = 0; i < 200; i++) {
             //Modifying particle state
             positions.push_back(glm::vec3(0.0f, i / 2.0f, 0));
             velocities.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -37,9 +37,9 @@ namespace GLOO {
             sphere->CreateComponent<ShadingComponent>(shader);
             sphere->CreateComponent<RenderingComponent>(sphere_mesh_);
             sphere->CreateComponent<MaterialComponent>(std::make_shared<Material>(Material::GetDefault()));
-            glm::vec3 sand_stone = { 0.689f, 0.565f, 0.510f };
+            glm::vec3 sand_stone = {0.689f, 0.565f, 0.510f};
             auto material_ptr = sphere->GetComponentPtr<MaterialComponent>();
-            Material& material = material_ptr->GetMaterial();
+            Material &material = material_ptr->GetMaterial();
             material.SetAmbientColor(sand_stone);
             material.SetDiffuseColor(sand_stone);
             sphere->GetComponentPtr<MaterialComponent>()->GetMaterial().SetDiffuseColor(sand_stone);
@@ -60,6 +60,10 @@ namespace GLOO {
         for (double i = 0; i < delta_time; i += step_) {
             ParticleState new_state = integrator->Integrate(system_, state_, time_ + i, step_);
             for (int j = 0; j < new_state.positions.size(); j++) {
+                // if (new_state.positions[j][1] < -1.0f) {
+                //     new_state.positions[j][1] = -1.0f;
+                //     new_state.velocities[j][1] = 0;
+                // }
                 particleSpheres[j]->GetTransform().SetPosition(new_state.positions[j]);
             }
             state_ = new_state;

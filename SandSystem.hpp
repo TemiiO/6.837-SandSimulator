@@ -13,7 +13,7 @@ namespace GLOO {
     public:
         std::vector<float> particle_masses;
         std::vector<bool> particles_fixed;
-        glm::vec3 g = glm::vec3(0.0f, -1.14f, 0.0f);
+        glm::vec3 g = glm::vec3(0.0f, - 1.14f, 0.0f);
         float k = .5f;
 
         ParticleState ComputeTimeDerivative(const ParticleState& state,
@@ -22,6 +22,7 @@ namespace GLOO {
             std::vector<glm::vec3> velocities = state.velocities;
             ParticleState new_state;
             float mu = 0.4f;
+
             //Force of gravity on each particle
             for (int i = 0; i < state.velocities.size(); i++) {
                 glm::vec3 G = particle_masses[i] * g;
@@ -32,20 +33,32 @@ namespace GLOO {
             for (int i = 0; i < particle_masses.size(); i++) {
                 //See if it collides with any other particle 
                 glm::vec3 first_position = state.positions[i];
-                for (int j = i + 1; j < particle_masses.size(); j++) {
+                for (int j = i+1; j < particle_masses.size(); j++) {
                     glm::vec3 second_position = state.positions[j];
                     //Take these positions and the sphere radius - currently using .015f - and see if collides
                     float position_diff = glm::distance(first_position, second_position);
-                    if (position_diff <= 0.015f) {
-                        new_state.velocities[i] = -new_state.velocities[i];
-                        new_state.velocities[j] = -new_state.velocities[j] + glm::vec3(0.5f, 0.5f, 0.0f);
+                    float radius = 0.015f;
+                    if (position_diff <= radius) {
+                        float slope = (first_position[1] - second_position[1]) / (first_position[0] - second_position[0]);
+                        glm::vec3 perp_slope = glm::normalize(glm::vec3({1, - (glm::pow(slope, -1.0f)), 0}));
+                        glm::vec3 vertical = glm::vec3(0, 1, 0);
+                        float theta = glm::dot(perp_slope, vertical);
+                        float deriv_value = 10.0f;
+                        glm::vec3 new_velocity_squared = (deriv_value * radius * g - 2 * radius * g * (glm::sin(theta) - mu * glm::cos(theta))) / (2 * mu);
+                        glm::vec3 new_velocity = glm::vec3({glm::pow(new_velocity_squared[0], 0.5f), glm::pow(new_velocity_squared[1], 0.5f), 0});
+                        glm::vec3 offset = {0.125f, 0.125f, 0.125f};
+                        if (glm::length(new_velocity) > 0.5f) {
+                            offset = glm::vec3(0);
+                        }
+                        new_state.velocities[i] = -new_state.velocities[i] - offset;
+                        new_state.velocities[j] = new_velocity + offset;
                     }
                 }
             }
             new_state.positions = state.velocities;
 
             //Fixed Particles and Handling the cutoff level
-            for (int i = 0; i < particles_fixed.size(); i++) {
+            for (int i = 0; i < particle_masses.size(); i++) {
                 //If the particle has hit the point where we don't want it to fall of the screen set the pos. and vel. to 0 in y-dir
                 if (positions[i][1] < -1.0f) {
                     //Adding frictional force and making sure the particle stops vertically
